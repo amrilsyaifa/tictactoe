@@ -3,6 +3,7 @@ import styles from "./App.module.scss";
 
 import { rightAnswer } from "./constants";
 import { generateTicTacToeValue } from "./helper";
+import PageDraw from "./page/PageDraw";
 import PageFinish from "./page/PageFinish";
 import PagePlaying from "./page/PagePlaying";
 import { SelectedDataProps } from "./types";
@@ -10,7 +11,7 @@ import { SelectedDataProps } from "./types";
 const App = () => {
   const [blockData, setBlockData] = useState<number[]>([]);
   const [winnerName, setWinnerName] = useState<"x" | "o">("x");
-  const [isGame, setIsGame] = useState<boolean>(false);
+  const [isGame, setIsGame] = useState<boolean | null>(null);
   const [stateStatus, setStateStatus] = useState<"x" | "o">("x");
   const [selectedData, setSelectedData] = useState<SelectedDataProps>({});
 
@@ -64,16 +65,22 @@ const App = () => {
               winner_array = [];
             }
           });
-          if (winner_array.length >= 3) {
+          if (
+            winner_array.length >= 3 &&
+            Object.keys(resultSorting).length >= 3
+          ) {
             const winnerText = obEntries[0] as "x" | "o";
             setWinnerName(winnerText);
             setIsGame(true);
+          } else if (
+            winner_array.length < 3 &&
+            Object.keys(resultSorting).length >= 3
+          ) {
+            console.log("jalan ");
+            setIsGame(false);
+          } else {
+            setIsGame(null);
           }
-          // if (obEntries[1].includes(righAnsw)) {
-          //   const winnerText = obEntries[0] as "x" | "o";
-          //   setWinnerName(winnerText);
-          //   setIsGame(true);
-          // }
         });
       });
     }
@@ -82,24 +89,28 @@ const App = () => {
   const onReset = () => {
     const result = generateTicTacToeValue();
     setBlockData(result as number[]);
-    setIsGame(false);
+    setIsGame(null);
     setStateStatus("x");
     setSelectedData({});
   };
 
+  console.log(" isGame", isGame);
+
   return (
     <div className={styles.container}>
       <div className={styles.content}>
-        {isGame ? (
+        {isGame === true ? (
           // TODO Winner Name
           <PageFinish status={winnerName} onClick={onReset} />
-        ) : (
+        ) : isGame === false ? (
+          <PageDraw onClick={onReset} />
+        ) : isGame === null ? (
           <PagePlaying
             data={blockData}
             selectedData={selectedData}
             onSelectCard={onSelectCard}
           />
-        )}
+        ) : null}
       </div>
     </div>
   );
