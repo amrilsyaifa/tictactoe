@@ -54,12 +54,26 @@ const App = () => {
     const resultSorting = sortingAnswer();
     if (resultSorting) {
       Object.entries(resultSorting).map((obEntries) => {
+        console.log("obEntries ", obEntries);
+        let winner_array = [];
         rightAnswer.map((righAnsw) => {
-          if (obEntries[1].includes(righAnsw)) {
+          righAnsw.split("").map((childRigthAnsw) => {
+            if (obEntries[1].includes(childRigthAnsw)) {
+              winner_array.push(true);
+            } else {
+              winner_array = [];
+            }
+          });
+          if (winner_array.length >= 3) {
             const winnerText = obEntries[0] as "x" | "o";
             setWinnerName(winnerText);
             setIsGame(true);
           }
+          // if (obEntries[1].includes(righAnsw)) {
+          //   const winnerText = obEntries[0] as "x" | "o";
+          //   setWinnerName(winnerText);
+          //   setIsGame(true);
+          // }
         });
       });
     }
