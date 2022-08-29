@@ -1,0 +1,24 @@
+.container {
+  width: 150px;
+  height: 150px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #4f41b7;
+  margin: 5px;
+  cursor: pointer;
+}
+
+.text-status {
+  font-family: sans-serif;
+  font-size: 50px;
+  font-weight: bold;
+  color: #ffffff;
+}
+
+.text-status-dark {
+  color: #2d246f;
+  font-family: sans-serif;
+  font-size: 50px;
+  font-weight: bold;
+}
