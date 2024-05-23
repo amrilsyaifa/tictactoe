@@ -11,9 +11,11 @@ import { SelectedDataProps } from "./types";
 const App = () => {
   const [blockData, setBlockData] = useState<number[]>([]);
   const [winnerName, setWinnerName] = useState<"x" | "o">("x");
-  const [isGame, setIsGame] = useState<boolean | null>(null);
+  const [isGame, setIsGame] = useState<boolean>(false);
+  const [isDraw, setIsDraw] = useState<boolean>(false);
   const [stateStatus, setStateStatus] = useState<"x" | "o">("x");
   const [selectedData, setSelectedData] = useState<SelectedDataProps>({});
+  const [count, setCount] = useState<number>(0);
 
   useEffect(() => {
     checkAnswer();
@@ -29,6 +31,7 @@ const App = () => {
       const newObjectData = { ...selectedData, [index]: stateStatus };
       setStateStatus(stateStatus === "x" ? "o" : "x");
       setSelectedData(newObjectData);
+      setCount(count + 1);
     }
   };
 
@@ -55,62 +58,44 @@ const App = () => {
     const resultSorting = sortingAnswer();
     if (resultSorting) {
       Object.entries(resultSorting).map((obEntries) => {
-        console.log("obEntries ", obEntries);
-        let winner_array = [];
         rightAnswer.map((righAnsw) => {
-          righAnsw.split("").map((childRigthAnsw) => {
-            if (obEntries[1].includes(childRigthAnsw)) {
-              winner_array.push(true);
-            } else {
-              winner_array = [];
-            }
-          });
-          if (
-            winner_array.length >= 3 &&
-            Object.keys(resultSorting).length >= 3
-          ) {
+          if (obEntries[1].includes(righAnsw)) {
+            setIsGame(true);
             const winnerText = obEntries[0] as "x" | "o";
             setWinnerName(winnerText);
-            setIsGame(true);
-          } else if (
-            winner_array.length < 3 &&
-            Object.keys(resultSorting).length >= 3
-          ) {
-            console.log("jalan ");
-            setIsGame(false);
-          } else {
-            setIsGame(null);
           }
         });
       });
+      if (count === 9 && !isGame) {
+        setIsDraw(true);
+      }
     }
   };
 
   const onReset = () => {
     const result = generateTicTacToeValue();
     setBlockData(result as number[]);
-    setIsGame(null);
+    setIsGame(false);
+    setIsDraw(false);
     setStateStatus("x");
     setSelectedData({});
+    setCount(0);
   };
-
-  console.log(" isGame", isGame);
 
   return (
     <div className={styles.container}>
       <div className={styles.content}>
-        {isGame === true ? (
-          // TODO Winner Name
+        {isGame && !isDraw && (
           <PageFinish status={winnerName} onClick={onReset} />
-        ) : isGame === false ? (
-          <PageDraw onClick={onReset} />
-        ) : isGame === null ? (
+        )}
+        {!isGame && isDraw && <PageDraw onClick={onReset} />}
+        {!isGame && !isDraw && (
           <PagePlaying
             data={blockData}
             selectedData={selectedData}
             onSelectCard={onSelectCard}
           />
-        ) : null}
+        )}
       </div>
     </div>
   );
